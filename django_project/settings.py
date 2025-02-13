@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = "accounts.CustomUser" 
 CRISPY_ALLOWED_TEMLPLATE_PACKS ="bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
