@@ -6,27 +6,18 @@
 <div class="container text-center mt-4">
 
   <!-- User Greeting -->
-  {% if user.is_authenticated %}
-    <h2 class="mb-3">Welcome, {{ user.username }}!</h2>
-
-    <!-- Age Check -->
-    {% if user.age %}
-      <p>You are {{ user.age }} years old.</p>
-    {% else %}
-      <p>We don’t know your age yet. Update your profile!</p>
-    {% endif %}
-
-    <!-- Logout Form -->
-    <form action="{% url 'logout' %}" method="post" class="mt-3">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Log Out</button>
-    </form>
-
-  {% else %}
-    <p class="mb-4">You are not logged in.</p>
-    <a href="{% url 'login' %}" class="btn btn-primary me-2">Log In</a>
-    <a href="{% url 'signup' %}" class="btn btn-success">Sign Up</a>
-  {% endif %}
-
-</div>
+{% if user.is_authenticated %}
+Hi {{ user.username }}! You are {{ user.age }} years old.
+<form action="{% url 'logout' %}" method="post">
+  {% csrf_token %}
+  <button type="submit">Log Out</button>
+</form>
+<br/>
+<p><a class="btn btn-primary" href="{% url 'article_list' %}" role="button">
+  View all articles</a></p> <!-- new-->
+{% else %}
+<p>You are not logged in</p>
+<a href="{% url 'login' %}">Log In</a> |
+<a href="{% url 'signup' %}">Sign Up</a>
+{% endif %}
 {% endblock content %}
