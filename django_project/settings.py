@@ -29,7 +29,7 @@ SECRET_KEY = env.str("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [".herokuapp.com", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "accounts",
     "pages",
-    "articles"
+    "articles",
 ]
 
 # Custom User Model
@@ -123,7 +123,7 @@ WSGI_APPLICATION = "django_project.wsgi.application"
 
 # Database configuration
 DATABASES = {
-    "default": {
+    "default": {env.dj_db_url("DATABASE_URL")
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
@@ -169,3 +169,6 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage", # new
 },
 }
+
+
+CSRF_TRUSTED_ORIGINS = ["https://*.herokuapp.com"]
