@@ -1,11 +1,30 @@
-<!-- templates/registration/signup.html-->
+<!-- templates/registration/signup.html -->
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+
 {% block title %}Sign Up{% endblock title %}
+
 {% block content %}
-<h2>Sign Up</h2>
-<form method="post">{% csrf_token %}
-  {{ form|crispy }}
-  <button class="btn btn-success" type="submit">Sign Up</button>
-</form>
+<div class="container" style="max-width: 500px; margin-top: 50px;">
+    <div class="card shadow p-4">
+        <h2 class="text-center mb-3">Create an Account</h2>
+
+        <!-- 1-line friendly password hint -->
+        <p class="text-muted text-center" style="font-size: 14px;">
+            🔒 Please use a strong password (minimum 6 characters recommended)
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <button class="btn btn-primary w-100 mt-3" type="submit">Sign Up</button>
+        </form>
+
+        <p class="text-center mt-3">
+            Already have an account? <a href="{% url 'login' %}">Log In</a>
+        </p>
+    </div>
+</div>
+
 {% endblock content %}

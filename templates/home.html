@@ -1,23 +1,107 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-<div class="container text-center mt-4">
+<style>
+  /* Full-page soft coffee gradient background */
+  body {
+    background: linear-gradient(135deg, #8b6e58, #c1a17b); /* lighter coffee gradient */
+    min-height: 100vh;
+    color: #fff; /* default text color for contrast */
+  }
 
-  <!-- User Greeting -->
-{% if user.is_authenticated %}
-Hi {{ user.username }}! You are {{ user.age }} years old.
-<form action="{% url 'logout' %}" method="post">
-  {% csrf_token %}
-  <button type="submit">Log Out</button>
-</form>
-<br/>
-<p><a class="btn btn-primary" href="{% url 'article_list' %}" role="button">
-  View all articles</a></p> <!-- new-->
-{% else %}
-<p>You are not logged in</p>
-<a href="{% url 'login' %}">Log In</a> |
-<a href="{% url 'signup' %}">Sign Up</a>
-{% endif %}
+  .hero-banner {
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* keep subtle shadow for better readability */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+  }
+
+  .card {
+    background-color: rgba(255, 255, 255, 0.9); /* white with slight transparency */
+    color: #333;
+  }
+
+  .btn-outline-primary {
+    border-color: #6f4e37;
+    color: #6f4e37;
+  }
+
+  .btn-outline-primary:hover {
+    background-color: #6f4e37;
+    color: #fff;
+  }
+</style>
+
+<div class="container mt-4">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner rounded-3 overflow-hidden mb-5">
+    <div class="px-3">
+      <h1 class="display-4 fw-bold" style="line-height: 1.2;">
+        Write.<br>
+        Share.<br>
+        Inspire.
+      </h1>
+      <span class="fs-3 fw-normal d-block mt-3">
+        Your news, your way
+      </span>
+      <a href="{% url 'article_list' %}" class="btn btn-dark btn-lg mt-4">View Articles</a>
+    </div>
+  </div>
+
+  <!-- Greeting Section -->
+  <div class="text-center mb-5">
+    {% if user.is_authenticated %}
+      <h2>Hi {{ user.username }}!</h2>
+
+      <div class="d-flex justify-content-center gap-3 mt-3">
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button class="btn btn-danger">Log Out</button>
+        </form>
+        <a class="btn btn-primary" href="{% url 'article_list' %}">View All Articles</a>
+      </div>
+
+    {% else %}
+      <h3>Welcome to News Portal!</h3>
+      <p class="lead">Please log in or sign up to access the latest articles.</p>
+      <div class="d-flex justify-content-center gap-3 mt-3">
+        <a class="btn btn-success" href="{% url 'login' %}">Log In</a>
+        <a class="btn btn-primary" href="{% url 'signup' %}">Sign Up</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Featured Articles Section -->
+  {% if user.is_authenticated %}
+  <div class="row">
+    {% for article in articles %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 shadow-sm">
+        {% if article.image %}
+        <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ article.title|truncatechars:50 }}</h5>
+          <p class="card-text">{{ article.content|truncatechars:100 }}</p>
+          <a href="{% url 'articles:detail' article.id %}" class="btn btn-outline-primary btn-sm">Read More</a>
+        </div>
+        <div class="card-footer text-muted small">
+          Published on {{ article.published_at|date:"M d, Y" }}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+      <p class="text-center text-muted">No articles available yet.</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
 {% endblock content %}

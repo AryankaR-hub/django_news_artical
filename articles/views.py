@@ -4,6 +4,9 @@ from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+
 
 from .models import Article
 from .forms import CommentForm
@@ -39,10 +42,11 @@ class CommentPost(SingleObjectMixin, FormView): # new
         return super().post(request, *args, **kwargs)
     def form_valid(self, form):
         comment = form.save(commit=False)
-        comment.article = self.object
+        comment.article_id = self.kwargs["pk"]
         comment.author = self.request.user
         comment.save()
-        return super().form_valid(form)
+        return redirect("article_detail", pk=self.kwargs["pk"])
+
     def get_success_url(self):
         article = self.object
         return reverse("article_detail", kwargs={"pk": article.pk})
@@ -51,9 +55,9 @@ class ArticleDetailView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         view = CommentGet.as_view()
         return view(request, *args, **kwargs)
-def post(self, request, *args, **kwargs):
-    view = CommentPost.as_view()
-    return view(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        view = CommentPost.as_view()
+        return view(request, *args, **kwargs)
 
 class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):  
     model = Article
@@ -78,6 +82,8 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
     template_name = "article_new.html"
     fields = ("title", "body")
 
-    def form_valid(self, form):  
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+    def form_valid(self, form):
+        article = form.save(commit=False)
+        article.author = self.request.user
+        article.save()
+        return redirect(article.get_absolute_url())
