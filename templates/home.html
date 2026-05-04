@@ -1,107 +1,285 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}Nocturnal Journal — Home{% endblock %}
 
-{% block title %}Home{% endblock title %}
-
-{% block content %}
+{% block page_theme %}
 <style>
-  /* Full-page soft coffee gradient background */
-  body {
-    background: linear-gradient(135deg, #8b6e58, #c1a17b); /* lighter coffee gradient */
-    min-height: 100vh;
-    color: #fff; /* default text color for contrast */
+  /* HOME uses dark_sky.avif — perfect for a starry nocturnal hero */
+  :root {
+    --page-bg-image: url('{% static "img/dark_sky.avif" %}');
+    --page-overlay:  rgba(2, 4, 12, 0.55);
   }
+</style>
+{% endblock %}
 
-  .hero-banner {
-    height: 400px;
+{% block extra_head %}
+<style>
+  /* ── HERO ───────────────────────────────────────────── */
+  .hero {
+    min-height: 96vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    /* keep subtle shadow for better readability */
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    padding: 5rem 2rem 6rem;
+    position: relative;
   }
 
-  .card {
-    background-color: rgba(255, 255, 255, 0.9); /* white with slight transparency */
-    color: #333;
+  /* Static star shimmer layer */
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, rgba(220,245,255,0.60) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 38% 10%, rgba(200,235,255,0.50) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 28%, rgba(200,235,255,0.45) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 82% 15%, rgba(200,235,255,0.55) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 52%, rgba(200,235,255,0.40) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 40%, rgba(200,235,255,0.42) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 68%, rgba(200,235,255,0.35) 0%, transparent 100%),
+      radial-gradient(1.2px 1.2px at 8% 75%, rgba(200,235,255,0.38) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero > * { position: relative; z-index: 1; }
+
+  .hero-tag {
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.52em; text-transform: uppercase;
+    color: #7ecfea;
+    margin-bottom: 2rem;
+    opacity: 0; animation: fadeUp 0.6s ease both 0.15s;
   }
 
-  .btn-outline-primary {
-    border-color: #6f4e37;
-    color: #6f4e37;
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 11vw, 8.5rem);
+    font-weight: 900;
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+    color: #deeaf8;
+    text-shadow: 0 0 90px rgba(56,180,216,0.18), 0 4px 70px rgba(0,0,0,0.95);
+    opacity: 0; animation: fadeUp 0.7s ease both 0.32s;
+    margin-bottom: 0;
+  }
+  .hero-title .accent-word {
+    display: block;
+    background: linear-gradient(120deg, #b8e8f8 0%, #38b4d8 45%, #00d4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  .btn-outline-primary:hover {
-    background-color: #6f4e37;
-    color: #fff;
+  .hero-divider {
+    width: 64px; height: 1px;
+    background: linear-gradient(90deg, transparent, #38b4d8, transparent);
+    margin: 2.4rem auto;
+    opacity: 0; animation: fadeUp 0.5s ease both 0.55s;
+  }
+
+  .hero-sub {
+    font-size: clamp(0.92rem, 2vw, 1.18rem);
+    font-weight: 300; font-style: italic;
+    color: #a0cce0;           /* clearly readable */
+    max-width: 500px;
+    line-height: 1.90;
+    opacity: 0; animation: fadeUp 0.6s ease both 0.68s;
+  }
+
+  .hero-cta {
+    display: flex; gap: 1.2rem;
+    justify-content: center; flex-wrap: wrap;
+    margin-top: 3rem;
+    opacity: 0; animation: fadeUp 0.6s ease both 0.85s;
+  }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column;
+    align-items: center; gap: 0.5rem;
+    opacity: 0; animation: fadeUp 0.6s ease both 1.2s;
+    z-index: 1;
+  }
+  .scroll-cue span {
+    font-size: 0.56rem; letter-spacing: 0.40em;
+    text-transform: uppercase; color: #5a8aaa;  /* visible */
+  }
+  .scroll-line {
+    width: 1px; height: 44px;
+    background: linear-gradient(to bottom, rgba(56,180,216,0.80), transparent);
+    animation: scrollPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { opacity:0.3; transform:scaleY(1); }
+    50%      { opacity:1;   transform:scaleY(1.12); }
+  }
+
+  /* ── PILLARS ────────────────────────────────────────── */
+  .pillars { padding: 5rem 0 4.5rem; }
+
+  .section-tag {
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.44em;
+    text-transform: uppercase; color: #38b4d8;
+    text-align: center; margin-bottom: 0.6rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 700; color: #d8eaf8; text-align: center;
+    margin-bottom: 3.5rem;
+    text-shadow: 0 0 45px rgba(56,180,216,0.18);
+  }
+
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+    gap: 1.4rem;
+    padding: 0 5%;
+  }
+  .pillar-tile {
+    background: rgba(6, 14, 30, 0.72);
+    border: 1px solid rgba(56,180,216,0.12);
+    border-radius: 12px;
+    padding: 2.3rem 1.9rem;
+    text-align: center;
+    backdrop-filter: blur(18px);
+    transition: all 0.38s cubic-bezier(0.16,1,0.3,1);
+  }
+  .pillar-tile:hover {
+    transform: translateY(-10px);
+    border-color: rgba(56,180,216,0.42);
+    background: rgba(8, 22, 44, 0.82);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.50), 0 0 32px rgba(56,180,216,0.08);
+  }
+  .pillar-icon {
+    font-size: 2.1rem; color: #38b4d8;
+    margin-bottom: 1.1rem; display: block;
+    transition: transform 0.3s;
+  }
+  .pillar-tile:hover .pillar-icon { transform: scale(1.2) rotate(-4deg); }
+  .pillar-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700;
+    color: #cce8f8;           /* clearly visible */
+    margin-bottom: 0.65rem;
+    letter-spacing: 0.04em;
+  }
+  .pillar-desc {
+    font-size: 0.84rem; color: #7aaac8;  /* readable */
+    line-height: 1.80; font-style: italic;
+  }
+  .pillar-tile.red-tile { border-color: rgba(224,85,85,0.12); }
+  .pillar-tile.red-tile:hover { border-color: rgba(224,85,85,0.45); }
+  .pillar-tile.red-tile .pillar-icon { color: #e05555; }
+  .pillar-tile.red-tile .pillar-name { color: #eaa8a8; }
+
+  /* ── CTA BAND ───────────────────────────────────────── */
+  .cta-band {
+    margin: 1rem 5% 5.5rem;
+    padding: 3.8rem 2.5rem;
+    background: rgba(6, 14, 30, 0.70);
+    border: 1px solid rgba(56,180,216,0.12);
+    border-radius: 12px;
+    backdrop-filter: blur(18px);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-band::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20%; right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #38b4d8, transparent);
+  }
+  .cta-band h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    color: #d8eaf8;           /* bright */
+    margin-bottom: 0.8rem;
+  }
+  .cta-band p {
+    color: #8ab8d0;           /* visible */
+    font-style: italic; font-size: 0.92rem; margin-bottom: 2.2rem;
+  }
+  .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
   }
 </style>
+{% endblock %}
 
-<div class="container mt-4">
-
-  <!-- Hero Banner -->
-  <div class="hero-banner rounded-3 overflow-hidden mb-5">
-    <div class="px-3">
-      <h1 class="display-4 fw-bold" style="line-height: 1.2;">
-        Write.<br>
-        Share.<br>
-        Inspire.
-      </h1>
-      <span class="fs-3 fw-normal d-block mt-3">
-        Your news, your way
-      </span>
-      <a href="{% url 'article_list' %}" class="btn btn-dark btn-lg mt-4">View Articles</a>
-    </div>
-  </div>
-
-  <!-- Greeting Section -->
-  <div class="text-center mb-5">
-    {% if user.is_authenticated %}
-      <h2>Hi {{ user.username }}!</h2>
-
-      <div class="d-flex justify-content-center gap-3 mt-3">
-        <form action="{% url 'logout' %}" method="post">
-          {% csrf_token %}
-          <button class="btn btn-danger">Log Out</button>
-        </form>
-        <a class="btn btn-primary" href="{% url 'article_list' %}">View All Articles</a>
-      </div>
-
-    {% else %}
-      <h3>Welcome to News Portal!</h3>
-      <p class="lead">Please log in or sign up to access the latest articles.</p>
-      <div class="d-flex justify-content-center gap-3 mt-3">
-        <a class="btn btn-success" href="{% url 'login' %}">Log In</a>
-        <a class="btn btn-primary" href="{% url 'signup' %}">Sign Up</a>
-      </div>
+{% block content_wrap %}
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-tag">✦ The Nocturnal Journal ✦</p>
+  <h1 class="hero-title">
+    DISCOVER.<br>
+    <span class="accent-word">DISCUSS.</span>
+  </h1>
+  <div class="hero-divider"></div>
+  <p class="hero-sub">Stories from the night. Secrets from the city.<br>Truth from the shadows.</p>
+  <div class="hero-cta">
+    <a href="{% url 'article_list' %}" class="btn-primary-glow">Explore the Feed</a>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'signup' %}" class="btn-outline-glow">Join the Circle</a>
     {% endif %}
   </div>
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
 
-  <!-- Featured Articles Section -->
-  {% if user.is_authenticated %}
-  <div class="row">
-    {% for article in articles %}
-    <div class="col-md-4 mb-4">
-      <div class="card h-100 shadow-sm">
-        {% if article.image %}
-        <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{ article.title|truncatechars:50 }}</h5>
-          <p class="card-text">{{ article.content|truncatechars:100 }}</p>
-          <a href="{% url 'articles:detail' article.id %}" class="btn btn-outline-primary btn-sm">Read More</a>
-        </div>
-        <div class="card-footer text-muted small">
-          Published on {{ article.published_at|date:"M d, Y" }}
-        </div>
-      </div>
+<!-- PILLARS -->
+<section class="pillars">
+  <p class="section-tag">What lives here</p>
+  <h2 class="section-title">The Four Pillars</h2>
+  <div class="pillar-grid">
+    <div class="pillar-tile">
+      <i class="fas fa-utensils pillar-icon"></i>
+      <h3 class="pillar-name">Best Eats</h3>
+      <p class="pillar-desc">Hidden cafes and street food gems that only locals know.</p>
     </div>
-    {% empty %}
-      <p class="text-center text-muted">No articles available yet.</p>
-    {% endfor %}
+    <div class="pillar-tile">
+      <i class="fas fa-map-marked-alt pillar-icon"></i>
+      <h3 class="pillar-name">Sightseeing</h3>
+      <p class="pillar-desc">Unreal views and local spots tourists will never find.</p>
+    </div>
+    <div class="pillar-tile">
+      <i class="fas fa-newspaper pillar-icon"></i>
+      <h3 class="pillar-name">Local Pulse</h3>
+      <p class="pillar-desc">What's really happening in your neighbourhood tonight.</p>
+    </div>
+    <div class="pillar-tile red-tile">
+      <i class="fas fa-user-secret pillar-icon"></i>
+      <h3 class="pillar-name">Anonymous</h3>
+      <p class="pillar-desc">Share your mysteries without a name. No trace, no trail.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  {% if user.is_authenticated %}
+  <h2>Welcome back, {{ user.username }}.</h2>
+  <p>What secret or discovery do you have for the world tonight?</p>
+  <div class="cta-actions">
+    <a href="{% url 'article_new' %}" class="btn-primary-glow">+ New Entry</a>
+    <a href="{% url 'article_list' %}" class="btn-outline-glow">Browse Feed</a>
+  </div>
+  {% else %}
+  <h2>Step into the Shadows.</h2>
+  <p>Become a member to post anonymous secrets and local dispatches.</p>
+  <div class="cta-actions">
+    <a href="{% url 'signup' %}" class="btn-primary-glow">Create Account</a>
+    <a href="{% url 'login' %}" class="btn-outline-glow">Log In</a>
   </div>
   {% endif %}
-
 </div>
-{% endblock content %}
+{% endblock %}

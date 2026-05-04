@@ -1,62 +1,103 @@
 {% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}{{ object.title }}{% endblock title %}
+{% block title %}{{ object.title }} | Nocturnal{% endblock %}
+
+{% block page_theme %}
+<style>
+  /* ARTICLE DETAIL uses green.avif — dark ferns = immersive reading */
+  :root {
+    --page-bg-image: url('{% static "img/green.avif" %}');
+    --page-overlay:  rgba(2, 10, 6, 0.78);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div style="max-width: 900px; margin: 0 auto;">
 
   <!-- Article Card -->
-  <div class="card shadow-sm mb-4">
+  <div class="obsidian-card mb-4">
     {% if object.image %}
-      <img src="{{ object.image.url }}" class="card-img-top" alt="{{ object.title }}">
+    <img src="{{ object.image.url }}"
+         style="width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin-bottom:2rem;border:1px solid rgba(56,180,216,0.12);"
+         alt="{{ object.title }}">
     {% endif %}
-    <div class="card-body">
-      <h2 class="card-title">{{ object.title }}</h2>
-      <p class="text-muted mb-3">by {{ object.author }} | {{ object.date|date:"M d, Y" }}</p>
-      <p class="card-text">{{ object.body }}</p>
+
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:#e8f5ee;margin-bottom:0.6rem;line-height:1.15;">
+      {{ object.title }}
+    </h1>
+
+    <p style="font-size:0.80rem;color:#6aaa88;margin-bottom:2rem;letter-spacing:0.06em;">
+      <i class="fa-regular fa-user me-1"></i>
+      <strong style="color:#8ad4aa;">{{ object.author }}</strong>
+      &nbsp;·&nbsp;
+      <i class="fa-regular fa-calendar me-1"></i>
+      {{ object.date|date:"M d, Y" }}
+    </p>
+
+    <div style="font-size:1rem;color:#c0e8d0;line-height:1.90;font-family:'DM Sans',sans-serif;">
+      {{ object.body|linebreaks }}
     </div>
+
     {% if object.author.pk == request.user.pk %}
-    <div class="card-footer d-flex gap-2">
-      <a href="{% url 'article_edit' object.pk %}" class="btn btn-sm btn-info">Edit</a>
-      <a href="{% url 'article_delete' object.pk %}" class="btn btn-sm btn-danger">Delete</a>
+    <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid rgba(56,180,216,0.12);display:flex;gap:0.8rem;">
+      <a href="{% url 'article_edit' object.pk %}"
+         style="display:inline-block;padding:0.65rem 1.6rem;background:linear-gradient(135deg,#38b4d8,#1a6e8a);color:#fff;font-size:0.78rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;border-radius:999px;transition:all 0.3s;box-shadow:0 4px 18px rgba(56,180,216,0.35);"
+         onmouseover="this.style.transform='translateY(-2px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        Edit
+      </a>
+      <a href="{% url 'article_delete' object.pk %}"
+         style="display:inline-block;padding:0.65rem 1.6rem;background:transparent;color:#e08090;font-size:0.78rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(224,96,112,0.35);border-radius:999px;transition:all 0.3s;"
+         onmouseover="this.style.background='rgba(224,96,112,0.10)';this.style.transform='translateY(-2px)'"
+         onmouseout="this.style.background='transparent';this.style.transform='translateY(0)'">
+        Delete
+      </a>
     </div>
     {% endif %}
   </div>
 
-  <!-- Comments Section -->
-  <div class="card mb-4 shadow-sm">
-    <div class="card-header">
-      <h4 class="mb-0">Comments</h4>
-    </div>
-    <div class="card-body">
-      {% if object.comments.exists %}
-        {% for comment in object.comments.all %}
-          <div class="border rounded p-2 mb-2">
-            <span class="fw-bold">{{ comment.author }}</span>: {{ comment.comment }}
-          </div>
-        {% endfor %}
-      {% else %}
-        <p class="text-muted">No comments yet.</p>
-      {% endif %}
-    </div>
-  </div>
+  <!-- Comments Card -->
+  <div class="obsidian-card mt-2">
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:#e8f5ee;margin-bottom:1.8rem;">
+      <i class="fa-regular fa-comments me-2" style="color:#38b4d8;"></i>Comments
+    </h3>
 
-  <!-- Add Comment Form -->
-  <div class="card shadow-sm p-4 mb-4">
-    <h4>Add a Comment</h4>
-    <form action="" method="post">
-      {% csrf_token %}
-      {{ form|crispy }}
-      <div class="mt-3">
-        <button class="btn btn-success" type="submit">Save Comment</button>
+    {% if object.comments.exists %}
+      {% for comment in object.comments.all %}
+      <div class="comment-bubble">
+        <span style="font-weight:700;color:#4ecba0;font-size:0.85rem;">@{{ comment.author }}</span>
+        <p style="margin:0.4rem 0 0;color:#a8d8b8;font-size:0.90rem;line-height:1.70;">{{ comment.comment }}</p>
       </div>
-    </form>
+      {% endfor %}
+    {% else %}
+      <p style="color:#5a9a78;font-style:italic;font-size:0.90rem;">
+        Silence in the woods… be the first to speak.
+      </p>
+    {% endif %}
+
+    <div style="margin-top:2.5rem;padding-top:1.8rem;border-top:1px solid rgba(56,180,216,0.10);">
+      <h4 style="font-family:'Playfair Display',serif;color:#cce8d8;margin-bottom:1.2rem;font-size:1.2rem;">
+        Leave a Thought
+      </h4>
+      <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn-nocturnal mt-3 rounded-pill px-5" type="submit">Post Comment</button>
+      </form>
+    </div>
   </div>
 
-  <p class="text-center">
-    <a href="{% url 'article_list' %}" class="btn btn-outline-primary">Back to All Articles</a>
-  </p>
+  <div style="text-align:center;margin-top:2rem;">
+    <a href="{% url 'article_list' %}"
+       style="color:var(--text-muted);text-decoration:none;font-size:0.82rem;transition:color 0.2s;"
+       onmouseover="this.style.color='#a0cce0'"
+       onmouseout="this.style.color='var(--text-muted)'">
+      <i class="fa-solid fa-arrow-left me-2"></i>Return to All Articles
+    </a>
+  </div>
 
 </div>
-{% endblock content %}
+{% endblock %}

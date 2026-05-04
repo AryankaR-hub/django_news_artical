@@ -1,51 +1,125 @@
 {% extends "base.html" %}
+{% load static %}
+{% block title %}The Feed — Nocturnal Journal{% endblock %}
 
-{% block title %}Articles{% endblock title %}
+{% block page_theme %}
+<style>
+  :root {
+    --page-bg-image: url('{% static "img/mountain_night.avif" %}');
+    --page-overlay:  rgba(3, 7, 20, 0.70);
+  }
+</style>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Header */
+  .feed-header {
+    text-align: center;
+    padding: 1rem 0 2.2rem;
+    border-bottom: 1px solid rgba(74,158,186,0.12);
+    margin-bottom: 2.2rem;
+  }
+  /* Stagger card animation */
+  .n-card:nth-child(1){animation-delay:0.04s}
+  .n-card:nth-child(2){animation-delay:0.12s}
+  .n-card:nth-child(3){animation-delay:0.20s}
+  .n-card:nth-child(4){animation-delay:0.28s}
+  .n-card:nth-child(5){animation-delay:0.36s}
+
+  .feed-top-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.6rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .feed-count {
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(130,175,210,0.42); font-style: italic;
+  }
+
+  /* Comment label */
+  .comments-label {
+    font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: rgba(110,158,200,0.38); margin-bottom: 0.55rem;
+  }
+
+  /* Empty state */
+  .empty-night {
+    text-align: center; padding: 5rem 2rem;
+  }
+  .empty-night .empty-icon {
+    font-size: 3rem; color: rgba(74,158,186,0.25); margin-bottom: 1.2rem; display:block;
+  }
+  .empty-night p {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem; color: rgba(130,175,210,0.38);
+    font-style: italic; letter-spacing: 0.1em;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<!-- Header -->
+<div class="feed-header">
+  <p class="page-eyebrow">✦ Dispatches from the dark ✦</p>
+  <h1 class="page-title">The Feed</h1>
+  <p class="page-sub">Every story the night has to offer.</p>
+</div>
 
-  <h2 class="mb-4 text-center">All Articles</h2>
+<div class="feed-top-row">
+  <span class="feed-count">{{ article_list|length }} entr{% if article_list|length == 1 %}y{% else %}ies{% endif %}</span>
+  {% if user.is_authenticated %}
+  <a href="{% url 'article_new' %}" class="btn-primary-glow" style="padding:0.55rem 1.4rem;font-size:0.65rem;">+ New Entry</a>
+  {% endif %}
+</div>
 
-  {% for article in article_list %}
-  <div class="card shadow-sm mb-4">
-    {% if article.image %}
-      <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
-    {% endif %}
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <div>
-        <a href="{{ article.get_absolute_url }}" class="fw-bold fs-5 text-decoration-none">{{ article.title }}</a>
-        <div class="text-muted small">
-          by {{ article.author }} | {{ article.date|date:"M d, Y" }}
-        </div>
-      </div>
-      {% if article.author.pk == request.user.pk %}
-      <div class="d-flex gap-2">
-        <a href="{% url 'article_edit' article.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
-        <a href="{% url 'article_delete' article.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
-      </div>
-      {% endif %}
+{% for article in article_list %}
+<div class="n-card">
+  {% if article.image %}
+  <img src="{{ article.image.url }}" class="n-card-img" alt="{{ article.title }}">
+  {% endif %}
+
+  <div class="n-card-head">
+    <div>
+      <a href="{{ article.get_absolute_url }}" class="n-card-title">{{ article.title }}</a>
+      <p class="n-card-meta">
+        by <strong style="color:rgba(200,228,245,0.7);">{{ article.author }}</strong>
+        &nbsp;·&nbsp; {{ article.date|date:"M d, Y" }}
+      </p>
     </div>
-
-    <div class="card-body">
-      <p>{{ article.body|truncatechars:200 }}</p>
-      <a href="{{ article.get_absolute_url }}" class="btn btn-sm btn-primary">Read More / Comment</a>
-    </div>
-
-    {% if article.comment_set.exists %}
-    <div class="card-footer bg-light">
-      <h6>Comments:</h6>
-      {% for comment in article.comment_set.all %}
-        <div class="border rounded p-2 mb-2">
-          <span class="fw-bold">{{ comment.author }}:</span> {{ comment }}
-        </div>
-      {% endfor %}
+    {% if article.author.pk == request.user.pk %}
+    <div class="d-flex gap-2 flex-shrink-0">
+      <a href="{% url 'article_edit' article.pk %}" class="btn-ghost">Edit</a>
+      <a href="{% url 'article_delete' article.pk %}" class="btn-danger-ghost">Delete</a>
     </div>
     {% endif %}
   </div>
-  {% empty %}
-    <p class="text-center text-muted">No articles available yet.</p>
-  {% endfor %}
 
+  <div class="n-card-body">
+    <p class="n-card-excerpt">{{ article.body|truncatechars:210 }}</p>
+    <a href="{{ article.get_absolute_url }}"
+       style="font-family:'Cinzel',serif;font-size:0.66rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(74,158,186,0.28);padding-bottom:1px;transition:all 0.25s;"
+       onmouseover="this.style.color='#7ecfea';this.style.borderColor='#7ecfea'"
+       onmouseout="this.style.color='var(--accent)';this.style.borderColor='rgba(74,158,186,0.28)'">
+      Read Entry ›
+    </a>
+  </div>
+
+  {% if article.comment_set.exists %}
+  <div class="n-card-footer">
+    <p class="comments-label">Comments</p>
+    {% for comment in article.comment_set.all %}
+    <div class="comment-pill">
+      <span class="c-author">{{ comment.author }}</span>: {{ comment }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
-{% endblock content %}
+
+{% empty %}
+<div class="empty-night">
+  <span class="empty-icon">🌑</span>
+  <p>No stories yet. The night awaits its first word.</p>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,9 +1,50 @@
-<!-- templates/article_delete.html-->
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete Article | Nocturnal{% endblock %}
+
+{% block page_theme %}
+<style>
+  :root {
+    --page-bg-image: url('{% static "img/green.avif" %}');
+    --page-overlay:  rgba(2, 8, 4, 0.82);
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<h1>Delete</h1>
-<form action="" method="post">{% csrf_token %}
-  <p>Are you sure you want to delete "{{ article.title }}"?</p>
-  <button class="btn btn-danger ms-2" type="submit">Confirm</button>
-</form>
-{% endblock content %}
+<div class="delete-container">
+  <div style="font-size:3rem;color:#e06070;margin-bottom:1.5rem;">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+  </div>
+
+  <h2 style="font-family:'Playfair Display',serif;color:#f0e0e4;font-weight:700;margin-bottom:0.8rem;">
+    Confirm Deletion
+  </h2>
+  <p style="color:#c09090;font-size:0.92rem;line-height:1.70;margin-bottom:0;">
+    Are you sure you want to permanently delete<br>
+    <strong style="color:#f0d0d5;">"{{ article.title }}"</strong>?<br>
+    <span style="font-size:0.80rem;color:#906070;font-style:italic;">This action cannot be undone.</span>
+  </p>
+
+  <hr style="border:none;border-top:1px solid rgba(224,96,112,0.20);margin:2rem 0;">
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+      <button type="submit"
+              style="padding:0.80rem 2rem;background:linear-gradient(135deg,#e06070,#a03040);color:#fff;font-size:0.80rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;border:none;border-radius:999px;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 20px rgba(224,96,112,0.40);"
+              onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 30px rgba(224,96,112,0.60)'"
+              onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(224,96,112,0.40)'">
+        Delete Permanently
+      </button>
+      <a href="{% url 'article_detail' article.pk %}"
+         style="display:inline-block;padding:0.80rem 2rem;color:#8ac0a0;font-size:0.80rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(100,180,130,0.30);border-radius:999px;transition:all 0.3s;"
+         onmouseover="this.style.borderColor='rgba(100,180,130,0.65)';this.style.transform='translateY(-2px)'"
+         onmouseout="this.style.borderColor='rgba(100,180,130,0.30)';this.style.transform='translateY(0)'">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

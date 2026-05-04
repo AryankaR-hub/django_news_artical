@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from environs import Env
 
@@ -12,10 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env.str("SECRET_KEY")
 DEBUG = env.bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = env.list(
-    "ALLOWED_HOSTS",
-    default=["django-news-artical-1.onrender.com"]
-)
+ALLOWED_HOSTS = ["*"]
+# env.list(
+#     "ALLOWED_HOSTS",
+#     default=["django-news-artical-1.onrender.com"]
+# )
 
 CSRF_TRUSTED_ORIGINS = [
     "https://django-news-artical-1.onrender.com",
@@ -100,12 +102,19 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# Use a non-manifest storage in DEBUG/test mode so static assets render without running collectstatic.
+IS_TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
+if DEBUG or IS_TESTING:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+else:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage" if DEBUG or IS_TESTING else "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 

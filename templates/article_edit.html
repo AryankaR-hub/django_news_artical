@@ -1,22 +1,53 @@
 {% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}Edit Article{% endblock title %}
+{% block title %}Edit: {{ object.title }} | Nocturnal{% endblock %}
+
+{% block page_theme %}
+<style>
+  :root {
+    --page-bg-image: url('{% static "img/green.avif" %}');
+    --page-overlay:  rgba(2, 10, 6, 0.80);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="card shadow-sm p-4">
-    <h2 class="mb-3">Edit Article</h2>
-    <p class="text-muted mb-4">Make changes to your article below.</p>
+<div class="obsidian-card" style="max-width:780px;margin:0 auto;animation:pageRise 0.6s ease both;">
 
-    <form action="" method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form|crispy }}
-      <div class="mt-3">
-        <button class="btn btn-info" type="submit">Update Article</button>
-        <a href="{% url 'article_list' %}" class="btn btn-secondary ms-2">Cancel</a>
-      </div>
-    </form>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(56,180,216,0.10);">
+    <div style="width:4px;height:40px;background:linear-gradient(to bottom,#38b4d8,#4ecba0);border-radius:2px;flex-shrink:0;"></div>
+    <div>
+      <p style="font-size:0.62rem;font-weight:700;letter-spacing:0.40em;text-transform:uppercase;color:#38b4d8;margin:0 0 0.2rem;">Editing</p>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:#e8f5ee;margin:0;">
+        Refine Your Story
+      </h2>
+    </div>
   </div>
+
+  <p style="color:#6aaa88;font-size:0.88rem;margin-bottom:1.8rem;font-style:italic;">
+    Currently editing <strong style="color:#8ad4aa;">"{{ object.title }}"</strong>
+  </p>
+
+  <form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="obsidian-form-group">
+      {{ form|crispy }}
+    </div>
+
+    <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(56,180,216,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <div style="display:flex;gap:0.8rem;align-items:center;flex-wrap:wrap;">
+        <button class="btn-publish" type="submit">Update Entry</button>
+        <a href="{% url 'article_detail' object.pk %}"
+           style="display:inline-block;padding:0.75rem 1.6rem;color:#5a9a78;font-size:0.78rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(90,154,120,0.30);border-radius:999px;transition:all 0.3s;"
+           onmouseover="this.style.borderColor='rgba(90,154,120,0.65)';this.style.color='#8ad4aa'"
+           onmouseout="this.style.borderColor='rgba(90,154,120,0.30)';this.style.color='#5a9a78'">
+          Discard Changes
+        </a>
+      </div>
+      <small style="color:#3a7060;font-size:0.72rem;">Last saved: {{ object.date|date:"M d, H:i" }}</small>
+    </div>
+  </form>
 </div>
-{% endblock content %}
+{% endblock %}

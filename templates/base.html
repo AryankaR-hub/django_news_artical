@@ -4,91 +4,131 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Newspaper App{% endblock %}</title>
-  
-  <!-- Bootstrap CSS (Lux theme) -->
-  <link href="https://bootswatch.com/5/lux/bootstrap.min.css" rel="stylesheet">
+  <title>{% block title %}Nocturnal Journal{% endblock %}</title>
 
-  <!-- Optional: Custom CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  <style>
+    /*
+     * PER-PAGE BACKGROUND SYSTEM
+     * Default: forest.avif (login/signup pages fall back to this)
+     * Each child template overrides --page-bg-image and --page-overlay
+     */
+    :root {
+      --page-bg-image: url('{% static "img/forest.avif" %}');
+      --page-overlay:  rgba(4, 8, 18, 0.62);
+    }
+    body {
+      background-image: var(--page-bg-image);
+    }
+    body::before {
+      background: var(--page-overlay);
+    }
+  </style>
+
+  {% block page_theme %}{% endblock %}
+  {% block extra_head %}{% endblock %}
+  {% block extra_style %}{% endblock %}
 </head>
 <body>
-  
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="{% url 'home' %}">Newspaper</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-              data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
-              aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a>
-          </li>
-          {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a href="{% url 'article_new' %}" class="nav-link">+ New Article</a>
+{% if not is_auth_page %}
+<!-- ══════════════ NAVBAR ══════════════ -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">◈ NOCTURNAL</a>
+
+    <button class="navbar-toggler border-0 shadow-none" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navContent">
+      <ul class="navbar-nav me-auto gap-1">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}"
+             href="{% url 'home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'article_list' %}">Feed</a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'article_new' %}">+ New Post</a>
+        </li>
+        {% endif %}
+      </ul>
+
+      <div class="d-flex align-items-center gap-3">
+        {% if user.is_authenticated %}
+        <div class="dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+             href="#" role="button" data-bs-toggle="dropdown">
+            <i class="fa-regular fa-circle-user" style="font-size:1rem; color: var(--teal);"></i>
+            <span style="font-size:0.80rem;letter-spacing:0.08em;color:var(--text-body);">
+              {{ user.username }}
+            </span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+            <li>
+              <a class="dropdown-item" href="{% url 'password_change' %}">
+                <i class="fa-solid fa-shield-halved me-2" style="color:var(--teal);"></i>
+                Security
+              </a>
             </li>
-          {% endif %}
-        </ul>
-
-        <div class="d-flex">
-          {% if user.is_authenticated %}
-            <ul class="navbar-nav">
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ user.username }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <form method="post" action="{% url 'logout' %}" class="px-3 py-1">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-outline-danger w-100">Logout</button>
-                    </form>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          {% else %}
-            <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Log in</a>
-            <a href="{% url 'signup' %}" class="btn btn-light">Sign up</a>
-          {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item" style="color:#ff8090;">
+                  <i class="fa-solid fa-power-off me-2"></i>Logout
+                </button>
+              </form>
+            </li>
+          </ul>
         </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn-nav-login">Log in</a>
+        <a href="{% url 'signup' %}" class="btn-nav-signup">Sign up</a>
+        {% endif %}
       </div>
     </div>
-  </nav>
+  </div>
+</nav>
+{% endif %}
 
-  <!-- Django messages -->
-  <div class="container mt-3">
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
+
+<!-- ══════════════ CONTENT ══════════════ -->
+<main>
+  {% if is_auth_page %}
+  {# Auth pages: full-screen centered, no navbar, no wrap #}
+  <div class="auth-center">
+    {% block content_auth %}{% endblock %}
   </div>
 
-  <!-- Main Content -->
-  <main class="container mt-4 mb-5">
-    {% block content %}{% endblock content %}
-  </main>
+  {% else %}
+  {% block content_wrap %}
+  <div class="container py-4">
+    <div class="glass-page-wrap">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+  {% endblock %}
+  {% endif %}
+</main>
 
-  <!-- Footer -->
-  <footer class="bg-light text-center py-3 mt-auto border-top">
-    &copy; {{ now|date:"Y" }} Newspaper App. All rights reserved.
-  </footer>
 
-  <!-- Bootstrap JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% if not is_auth_page %}
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  &copy; 2026 &nbsp;·&nbsp; THE NOCTURNAL JOURNAL &nbsp;·&nbsp; Written in Darkness
+</footer>
+{% endif %}
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>
