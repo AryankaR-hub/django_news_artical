@@ -8,14 +8,13 @@ class SignUpView(CreateView):
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
 
-    # Optional: add a success message when user signs up
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(
-            self.request,
-            "🎉 Account created successfully! You can now log in."
-        )
-        return response
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # This tells base.html to use the auth layout
+        context["is_auth_page"] = True 
+        return context
+    
+    
 
     # Optional: add a friendly message if form is invalid
     def form_invalid(self, form):

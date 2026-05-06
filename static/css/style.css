@@ -620,3 +620,73 @@ textarea.form-control { min-height: 150px; resize: vertical; }
   letter-spacing: 0.12em !important;
   text-transform: uppercase !important;
 }
+
+/* Ensure the auth container actually fills the screen */
+.auth-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Force Crispy labels to be visible if they are hiding */
+.login-card label {
+    display: block !important;
+    visibility: visible !important;
+    color: #a0d4be !important; 
+}
+
+/* Ensure the body actually shows the image */
+body {
+    min-height: 100vh;
+    position: relative;
+    background-color: #020810; /* fallback black */
+    color: #e8f5ee;
+}
+
+/* Fix the Auth Center wrapper from base.html */
+.auth-center {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* This makes sure your image stays behind the card */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    background-image: var(--page-bg-image);
+    background-size: cover;
+    background-position: center;
+    z-index: -2;
+}
+
+/* Dark overlay for readability */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    background: var(--page-overlay);
+    z-index: -1;
+}
+
+/* Hide the messy help text or style it neatly */
+.signup-card .helptext, .signup-card .form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.65rem !important;
+    color: #7ab8a0 !important; /* Muted forest green */
+    line-height: 1.2;
+}
+
+/* Ensure labels are ALWAYS visible against black */
+.signup-card label {
+    color: #4ecba0 !important; /* Bright Teal */
+    text-shadow: 0 0 10px rgba(78,203,160,0.3);
+}

@@ -12,22 +12,32 @@
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
   <style>
-    /*
-     * PER-PAGE BACKGROUND SYSTEM
-     * Default: forest.avif (login/signup pages fall back to this)
-     * Each child template overrides --page-bg-image and --page-overlay
-     */
-    :root {
-      --page-bg-image: url('{% static "img/forest.avif" %}');
-      --page-overlay:  rgba(4, 8, 18, 0.62);
-    }
-    body {
-      background-image: var(--page-bg-image);
-    }
-    body::before {
-      background: var(--page-overlay);
-    }
-  </style>
+  :root {
+    --page-bg-image: url('{% static "img/forest.avif" %}');
+    /* We are making the overlay almost transparent (0.15) */
+    --page-overlay: rgba(0, 5, 10, 0.15); 
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: var(--page-bg-image);
+    background-size: cover;
+    background-position: center;
+    /* This makes the image vivid and clear */
+    filter: brightness(1.1) saturate(1.3) contrast(1.1);
+    z-index: -2;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--page-overlay);
+    z-index: -1;
+  }
+</style>
 
   {% block page_theme %}{% endblock %}
   {% block extra_head %}{% endblock %}

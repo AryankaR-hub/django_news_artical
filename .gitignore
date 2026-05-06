@@ -1,17 +1,38 @@
-# Virtual environment
-source/
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+
+# =========================
+# Virtual Environment
+# =========================
 venv/
 env/
+source/
 
-# Python cache
-__pycache__/
-*.pyc
-
-# Django stuff
+# =========================
+# Django
+# =========================
 db.sqlite3
+*.log
+staticfiles/
+media/
 
-# VS Code
+# =========================
+# Environment Variables
+# =========================
+.env
+
+# =========================
+# IDE / Editor
+# =========================
 .vscode/
+.idea/
 
-# OS files
+# =========================
+# OS Files
+# =========================
 .DS_Store
+Thumbs.db
