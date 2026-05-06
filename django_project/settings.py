@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 from environs import Env
@@ -10,9 +11,9 @@ env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
-SECRET_KEY = env.str("SECRET_KEY")
-DEBUG = env.bool("DEBUG", default=False)
-
+SECRET_KEY = os.environ.get("SECRET_KEY")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 ALLOWED_HOSTS = ["*"]
 # env.list(
 #     "ALLOWED_HOSTS",
