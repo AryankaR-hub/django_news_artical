@@ -104,10 +104,10 @@
     </a>
   </div>
 
-  {% if article.comment_set.count %}
+  {% if article.comments.count %}
   <div class="n-card-footer">
     <p class="comments-label">Comments</p>
-    {% for comment in article.comment_set.all %}
+    {% for comment in article.comments.all %}
     <div class="comment-pill">
       <span class="c-author">{{ comment.author }}</span>: {{ comment }}
     </div>

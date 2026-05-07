@@ -65,7 +65,7 @@
       <i class="fa-regular fa-comments me-2" style="color:#38b4d8;"></i>Comments
     </h3>
 
-    {% if object.comments.exists %}
+    {% if object.comments.count %}
       {% for comment in object.comments.all %}
       <div class="comment-bubble">
         <span style="font-weight:700;color:#4ecba0;font-size:0.85rem;">@{{ comment.author }}</span>
