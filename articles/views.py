@@ -1,89 +1,13 @@
-from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, DetailView, FormView
-from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.urls import path
+from .views import (
+    ArticleListView, ArticleDetailView, ArticleUpdateView,
+    ArticleDeleteView, ArticleCreateView,
+)
 
-
-from .models import Article
-from .forms import CommentForm
-
-# New ArticleView class
-class ArticleView(ListView):  
-    model = Article
-    template_name = "article_view.html"
-    context_object_name = "articles"
-
-class ArticleListView(ListView):  
-    model = Article
-    template_name = "article_list.html"
-
-    def get_context_data(self, **kwargs):  
-        context = super().get_context_data(**kwargs)
-        context["form"] = CommentForm()
-        return context
-
-class CommentGet(DetailView): # new
-    model = Article
-    template_name = "article_detail.html"
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = CommentForm()
-        return context
-class CommentPost(SingleObjectMixin, FormView): # new
-    model = Article
-    form_class = CommentForm
-    template_name = "article_detail.html"
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super().post(request, *args, **kwargs)
-    def form_valid(self, form):
-        comment = form.save(commit=False)
-        comment.article_id = self.kwargs["pk"]
-        comment.author = self.request.user
-        comment.save()
-        return redirect("article_detail", pk=self.kwargs["pk"])
-
-    def get_success_url(self):
-        article = self.object
-        return reverse("article_detail", kwargs={"pk": article.pk})
-
-class ArticleDetailView(LoginRequiredMixin, View):  
-    def get(self, request, *args, **kwargs):
-        view = CommentGet.as_view()
-        return view(request, *args, **kwargs)
-    def post(self, request, *args, **kwargs):
-        view = CommentPost.as_view()
-        return view(request, *args, **kwargs)
-
-class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):  
-    model = Article
-    fields = ("title", "body")
-    template_name = "article_edit.html"
-
-    def test_func(self):  
-        obj = self.get_object()
-        return obj.author == self.request.user
-
-class ArticleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):  
-    model = Article
-    template_name = "article_delete.html"
-    success_url = reverse_lazy("article_list")
-
-    def test_func(self):  
-        obj = self.get_object()
-        return obj.author == self.request.user
-
-class ArticleCreateView(LoginRequiredMixin, CreateView):  
-    model = Article
-    template_name = "article_new.html"
-    fields = ("title", "body")
-
-    def form_valid(self, form):
-        article = form.save(commit=False)
-        article.author = self.request.user
-        article.save()
-        return redirect(article.get_absolute_url())
+urlpatterns = [
+    path("<int:pk>/", ArticleDetailView.as_view(), name="article_detail"),
+    path("<int:pk>/edit/", ArticleUpdateView.as_view(), name="article_edit"),
+    path("<int:pk>/delete/", ArticleDeleteView.as_view(), name="article_delete"),
+    path("new/", ArticleCreateView.as_view(), name="article_new"),
+    path("", ArticleListView.as_view(), name="article_list"),
+]

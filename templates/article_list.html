@@ -104,7 +104,7 @@
     </a>
   </div>
 
-  {% if article.comment_set.exists %}
+  {% if article.comment_set.count %}
   <div class="n-card-footer">
     <p class="comments-label">Comments</p>
     {% for comment in article.comment_set.all %}
